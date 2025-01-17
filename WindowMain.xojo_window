@@ -188,6 +188,9 @@ End
 	#tag Event
 		Sub Opening()
 		  CreateBackgroundPicture
+		  
+		  LabelInfo1.Text = ""
+		  LabelInfo2.Text = ""
 		End Sub
 	#tag EndEvent
 
@@ -332,6 +335,10 @@ End
 		ModificationColumn As Integer = 4
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		VersionColumn As Integer = 1
+	#tag EndProperty
+
 
 #tag EndWindowCode
 
@@ -339,6 +346,10 @@ End
 	#tag Event
 		Function ConstructContextualMenu(base As DesktopMenuItem, x As Integer, y As Integer) As Boolean
 		  System.DebugLog CurrentMethodName
+		  
+		  base.AddMenu New DesktopMenuItem("Open Xojo IDE ..", "openxojoide")
+		  
+		  base.AddMenu New DesktopMenuItem("Open With ..", "selectxojoide")
 		  
 		  base.AddMenu New DesktopMenuItem("Open Path", "explorer")
 		  
@@ -361,6 +372,48 @@ End
 		      If folder.IsFolder Then
 		        System.DebugLog "Open " + folder.NativePath
 		        folder.Open(True)
+		      End If
+		    End If
+		    Return True
+		  Case "selectxojoide"
+		    If Me.SelectedRowIndex = DesktopListBox.NoSelection Then
+		      MessageBox("please select a row")
+		    Else
+		      
+		      Var version As String = Me.CellTextAt(Me.SelectedRowIndex, Self.VersionColumn)
+		      
+		      Var dlg As New OpenFileDialog
+		      dlg.ActionButtonCaption = "select executable file"
+		      dlg.CancelButtonCaption = "cancel"
+		      'dlg.SuggestedFileName = "Xojo.exe" // MacOS Linux
+		      dlg.Title = "select Xojo IDE"
+		      dlg.PromptText = "select Xojo IDE for project version " + version
+		      dlg.InitialFolder = SpecialFolder.Applications
+		      dlg.AllowMultipleSelections = False
+		      
+		      Var f As FolderItem = dlg.ShowModal
+		      If f <> Nil Then
+		        
+		        ' Use the folderitem here
+		        Var db As New DB
+		        Var comment As String = ""
+		        db.ExecuteSQL("delete from xojo where Version=?", version)
+		        db.ExecuteSQL("insert into xojo (Version, Path, Comment) VALUES (?, ?, ?)", version, f.NativePath, comment)
+		      Else
+		        ' User cancelled
+		      End If
+		    End If
+		    Return True
+		  Case "openxojoide"
+		    If Me.SelectedRowIndex = DesktopListBox.NoSelection Then
+		      MessageBox("please select a row")
+		    Else
+		      Var version As String = Me.CellTextAt(Me.SelectedRowIndex, Self.VersionColumn)
+		      Var db As New DB
+		      Var rs As RowSet = db.SelectSQL("select * from xojo where version=?", version)
+		      If rs.AfterLastRow = False Then
+		        Var f As New FolderItem(rs.Column("Path"), FolderItem.PathModes.Native)
+		        f.Open(True)
 		      End If
 		    End If
 		    Return True
@@ -703,6 +756,14 @@ End
 		Group="Behavior"
 		InitialValue=""
 		Type="Picture"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="VersionColumn"
+		Visible=false
+		Group="Behavior"
+		InitialValue="1"
+		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
 #tag EndViewBehavior
