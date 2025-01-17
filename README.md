@@ -14,3 +14,7 @@ it read the project version by opening each project file.<br>
   <img src="Screenshot/Screenshot 2025-01-17 194809.png" alt="Titelbild">
 </p>
 
+<p align="center">to-do list:<br>
+open the installed ide by version.<br>
+that need some kind of configuration.
+</p>
