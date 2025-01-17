@@ -1,4 +1,5 @@
-# Xojo-Projects-Info
+<p align="center"># Xojo-Projects-Info</p>
+
 <p align="center">
 Year of Code 2025: January Project Sharing
 </p>
