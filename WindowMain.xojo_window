@@ -181,6 +181,14 @@ Begin DesktopWindow WindowMain
       Visible         =   True
       Width           =   63
    End
+   Begin Timer TimerLoad
+      Index           =   -2147483648
+      LockedInPosition=   False
+      Period          =   1
+      RunMode         =   1
+      Scope           =   0
+      TabPanelIndex   =   0
+   End
 End
 #tag EndDesktopWindow
 
@@ -191,6 +199,8 @@ End
 		  
 		  LabelInfo1.Text = ""
 		  LabelInfo2.Text = ""
+		  
+		  
 		End Sub
 	#tag EndEvent
 
@@ -223,6 +233,7 @@ End
 	#tag Method, Flags = &h0
 		Sub AtReady()
 		  ThreadScan.MemoryToList(Self.ListProjects, Self.ModificationColumn, "")
+		  ThreadScan.MemoryToDB()
 		  Self.MouseCursor = System.Cursors.StandardPointer
 		  MenuScanFolder.Enabled = True
 		  LabelInfo1.Text = ""
@@ -503,6 +514,20 @@ End
 		    End If
 		  Next
 		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events TimerLoad
+	#tag Event
+		Sub Action()
+		  Self.MouseCursor = System.Cursors.Wait
+		  LabelInfo1.Text = "..."
+		  LabelInfo1.Refresh(True)
+		  ThreadScan.MemoryFromDB
+		  ThreadScan.MemoryToList(Self.ListProjects, Self.ModificationColumn, "")
+		  LabelInfo1.Text = "List from DB"
+		  LabelInfo2.Text = ""
+		  Self.MouseCursor = System.Cursors.StandardPointer
 		End Sub
 	#tag EndEvent
 #tag EndEvents

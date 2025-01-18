@@ -132,10 +132,48 @@ Inherits Thread
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub MemoryFromDB()
+		  System.DebugLog CurrentMethodName
+		  
+		  Var db As New DB
+		  Var rs As RowSet = db.SelectSQL("select * from project")
+		  
+		  Memory.RemoveAll
+		  While Not rs.AfterLastRow
+		    Var m As New MemoryClass
+		    m.F = New FolderItem(rs.Column("NativePath").StringValue, FolderItem.PathModes.Native)
+		    m.Project = rs.Column("Project").StringValue
+		    m.Version = rs.Column("Version").StringValue
+		    Memory.Add(m)
+		    rs.MoveToNextRow
+		  Wend
+		  
+		  
+		  
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub MemoryToDB()
+		  System.DebugLog CurrentMethodName
+		  
+		  Var db As New DB
+		  db.BeginTransaction
+		  db.ExecuteSQL("delete from project")
+		  For Each m As MemoryClass In Memory
+		    db.ExecuteSQL("insert into project (NativePath,Project,Version) values (?, ?, ?)",m.F.NativePath,m.Project,m.Version)
+		  Next
+		  db.CommitTransaction
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub MemoryToList(list As DesktopListBox, ModificationColumn As Integer, Tx As String)
+		  System.DebugLog CurrentMethodName
+		  
 		  list.RemoveAllRows
-		  
-		  
 		  
 		  For Each m As MemoryClass In Memory
 		    Var view As Boolean =  False
