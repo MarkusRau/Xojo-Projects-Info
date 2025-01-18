@@ -15,5 +15,4 @@ it read the project version by opening each project file.<br>
 </p>
 
 <p align="center">to-do list:<br>
-in the context menu open the ide with project path argument ..
 </p>
