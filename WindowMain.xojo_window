@@ -347,6 +347,10 @@ End
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		NativePathColumn As Integer = 5
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		VersionColumn As Integer = 1
 	#tag EndProperty
 
@@ -375,7 +379,8 @@ End
 		  System.DebugLog CurrentMethodName
 		  
 		  Select Case selectedItem.Tag
-		  Case "explorer"
+		    
+		  Case "explorer" 'macht den pfad auf
 		    If Me.SelectedRowIndex = DesktopListBox.NoSelection Then
 		    Else
 		      Var f As FolderItem = Me.RowTagAt(Me.SelectedRowIndex)
@@ -386,7 +391,8 @@ End
 		      End If
 		    End If
 		    Return True
-		  Case "selectxojoide"
+		    
+		  Case "selectxojoide" 'datei dialog exe
 		    If Me.SelectedRowIndex = DesktopListBox.NoSelection Then
 		      MessageBox("please select a row")
 		    Else
@@ -415,16 +421,25 @@ End
 		      End If
 		    End If
 		    Return True
-		  Case "openxojoide"
+		    
+		  Case "openxojoide" 'run ide with project filename/path
 		    If Me.SelectedRowIndex = DesktopListBox.NoSelection Then
 		      MessageBox("please select a row")
 		    Else
 		      Var version As String = Me.CellTextAt(Me.SelectedRowIndex, Self.VersionColumn)
+		      Var nativePath As String = Chr(34) + Me.CellTextAt(Me.SelectedRowIndex, Self.NativePathColumn) + Chr(34)
 		      Var db As New DB
 		      Var rs As RowSet = db.SelectSQL("select * from xojo where version=?", version)
 		      If rs.AfterLastRow = False Then
+		        System.DebugLog "found version " + version + " in database xojo table" 
 		        Var f As New FolderItem(rs.Column("Path"), FolderItem.PathModes.Native)
-		        f.Open(True)
+		        System.DebugLog "exe is here " + f.NativePath
+		        If f.Exists = True Then
+		          System.DebugLog "parameters project path is " + nativePath
+		          f.Open(nativePath, True)
+		        Else
+		          MessageBox("xojo exe not found " + f.NativePath)
+		        End If
 		      End If
 		    End If
 		    Return True
@@ -788,6 +803,14 @@ End
 		Visible=false
 		Group="Behavior"
 		InitialValue="1"
+		Type="Integer"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NativePathColumn"
+		Visible=false
+		Group="Behavior"
+		InitialValue="5"
 		Type="Integer"
 		EditorType=""
 	#tag EndViewProperty
