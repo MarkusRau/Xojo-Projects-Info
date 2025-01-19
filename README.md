@@ -15,5 +15,6 @@ it read the project version by opening each project file.<br>
 </p>
 
 <p align="center">to-do list:<br>
-  create 50 folderitem with nativepath on NAS took seconds!?
+  after load data from database the
+  create of 50 folderitem with nativepath on NAS took seconds!?
 </p>
